@@ -1,4 +1,5 @@
 use clap::Parser;
+use search_tui::tui_run;
 use std::{
     fs,
     io::{self, BufRead, Write},
@@ -7,6 +8,7 @@ use std::{
 mod cli;
 mod config_path;
 mod paths;
+mod search_tui;
 use cli::{Args, Mode};
 
 use crate::config_path::{load_saved_paths, save_paths};
@@ -58,9 +60,9 @@ fn add_path(args: &Args) {
     }
 
     let new_path = paths::PathItem {
-        description: description_buf,
-        name: name_buf,
-        full_path: path,
+        description: description_buf.trim().into(),
+        name: name_buf.trim().into(),
+        full_path: path.trim().into(),
     };
 
     paths.add_path(new_path);
@@ -71,7 +73,11 @@ fn main() {
     let args = Args::parse();
     match args.mode() {
         Mode::AddPath => add_path(&args),
-        _ => todo!(),
+        Mode::Tui => {
+            let items = load_saved_paths();
+            if let Ok(Some(path)) = tui_run(items) {
+                println!("Selected path: {:?}", path);
+            }
+        }
     };
-    println!("{:?}", args);
 }

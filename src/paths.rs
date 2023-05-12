@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
+// TODO: remove Clone!
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct PathItem {
     pub name: String,
     pub full_path: String,
@@ -36,6 +37,16 @@ impl PathItems {
     pub fn exists(&self, path: &str) -> bool {
         self.paths.iter().any(|p| p.full_path == path)
     }
+
+    /// Find Path items that match the search
+    /// search will be OK if [search] is part of PathItem::name or PathItem::full_path
+    pub fn filter_paths<'a>(&'a self, search: &'a str) -> impl Iterator<Item = &'a PathItem> {
+        // TODO: filter already filtered paths
+        // TODO: fuzzy search
+        self.paths.iter().filter(move |&path| {
+            path.full_path.contains(search) || path.name.to_lowercase().contains(search)
+        })
+    }
 }
 
 impl Default for PathItems {
@@ -65,10 +76,10 @@ mod tests {
             ],
         };
 
-        assert_eq!(items.find_paths("").len(), 2);
-        assert_eq!(items.find_paths("path").len(), 2);
-        assert_eq!(items.find_paths("name").len(), 1);
-        assert_eq!(items.find_paths("root").len(), 1);
-        assert_eq!(items.find_paths("foobar").len(), 0);
+        assert_eq!(items.filter_paths("").count(), 2);
+        assert_eq!(items.filter_paths("path").count(), 2);
+        assert_eq!(items.filter_paths("name").count(), 1);
+        assert_eq!(items.filter_paths("root").count(), 1);
+        assert_eq!(items.filter_paths("foobar").count(), 0);
     }
 }
