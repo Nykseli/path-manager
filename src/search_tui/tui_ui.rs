@@ -8,9 +8,9 @@ use tui::{
 };
 use unicode_width::UnicodeWidthStr;
 
-use super::tui_state::{InputMode, TuiState};
+use super::tui_state::{InputMode, TuiInnerState};
 
-fn help_message_widget(app: &TuiState) -> Paragraph {
+fn help_message_widget<'a>(app: &'a TuiInnerState<'a>) -> Paragraph<'a> {
     let (msg, style) = match app.input_mode {
         InputMode::Select => (
             vec![
@@ -39,7 +39,7 @@ fn help_message_widget(app: &TuiState) -> Paragraph {
     Paragraph::new(text)
 }
 
-fn input_widget(app: &TuiState) -> Paragraph {
+fn input_widget<'a>(app: &'a TuiInnerState<'a>) -> Paragraph<'a> {
     Paragraph::new(app.input.as_ref())
         .style(match app.input_mode {
             InputMode::Select => Style::default(),
@@ -48,9 +48,9 @@ fn input_widget(app: &TuiState) -> Paragraph {
         .block(Block::default().borders(Borders::ALL).title("Input"))
 }
 
-fn paths_view_widget(app: &mut TuiState) -> List {
+fn paths_view_widget<'a>(app: &'a TuiInnerState<'a>) -> List<'a> {
     // TODO: show name and optional description!
-    let mut paths: Vec<ListItem> = app
+    let paths: Vec<ListItem> = app
         .items
         .filter_paths(&app.input)
         .enumerate()
@@ -64,20 +64,36 @@ fn paths_view_widget(app: &mut TuiState) -> List {
         })
         .collect();
 
-    // TODO: handle this more cleanly
-    app.filtered_len = paths.len();
-
     List::new(paths)
         .start_corner(Corner::BottomLeft)
         .block(Block::default().borders(Borders::ALL).title("Paths"))
 }
 
-fn path_description_widget() -> Paragraph<'static> {
-    Paragraph::new("Super secert info!")
+fn path_description_widget<'a>(app: &'a TuiInnerState<'a>) -> Paragraph<'a> {
+    if app.highlighted.is_none() {
+        return Paragraph::new("No item seleceted");
+    }
+
+    let highlighted = app.highlighted.unwrap();
+
+    let name = Spans::from(vec![
+        Span::styled("Name ", Style::default().add_modifier(Modifier::BOLD)),
+        Span::raw(&highlighted.name),
+    ]);
+
+    let description = Spans::from(vec![
+        Span::styled(
+            "Description ",
+            Style::default().add_modifier(Modifier::BOLD),
+        ),
+        Span::raw(&highlighted.description),
+    ]);
+
+    Paragraph::new(vec![name, description])
         .block(Block::default().borders(Borders::all()).title("Info"))
 }
 
-pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut TuiState) {
+pub fn ui<'a, B: Backend>(f: &mut Frame<B>, app: &'a TuiInnerState<'a>) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .margin(2)
@@ -86,7 +102,7 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut TuiState) {
                 // Input help message
                 Constraint::Length(1),
                 // Path description
-                Constraint::Length(3),
+                Constraint::Length(4),
                 // List of paths
                 Constraint::Min(1),
                 // Input
@@ -101,7 +117,7 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut TuiState) {
 
     // TODO: Display extra info about the path, split text based on the width of
     //       current terminal window
-    let description = path_description_widget();
+    let description = path_description_widget(app);
     f.render_widget(description, chunks[1]);
 
     let paths = paths_view_widget(app);

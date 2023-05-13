@@ -38,6 +38,15 @@ impl PathItems {
         self.paths.iter().any(|p| p.full_path == path)
     }
 
+    pub fn filter<'a>(&'a self, search: &str) -> Vec<&'a PathItem> {
+        self.paths
+            .iter()
+            .filter(move |&path| {
+                path.full_path.contains(search) || path.name.to_lowercase().contains(search)
+            })
+            .collect()
+    }
+
     /// Find Path items that match the search
     /// search will be OK if [search] is part of PathItem::name or PathItem::full_path
     pub fn filter_paths<'a>(&'a self, search: &'a str) -> impl Iterator<Item = &'a PathItem> {

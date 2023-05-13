@@ -1,14 +1,14 @@
 use crossterm::event::{self, Event, KeyCode, KeyModifiers};
 use std::io;
 
-use super::tui_state::{InputMode, TuiState};
+use super::tui_state::{InputMode, TuiInnerState};
 
-pub fn handle_event(app: &mut TuiState) -> io::Result<()> {
+pub fn handle_event<'a>(app: &'a mut TuiInnerState<'a>) -> io::Result<&'a mut TuiInnerState<'a>> {
     if let Event::Key(key) = event::read()? {
         // Ctrl-C will close out the program instantly
         if key.modifiers.contains(KeyModifiers::CONTROL) && key.code == KeyCode::Char('c') {
             app.quit = true;
-            return Ok(());
+            return Ok(app);
         }
 
         match app.input_mode {
@@ -59,5 +59,13 @@ pub fn handle_event(app: &mut TuiState) -> io::Result<()> {
         }
     }
 
-    Ok(())
+    // TODO: handle this more cleanly. Now were filtering results here, and in the UI
+    app.filtered_len = app.items.filter_paths(&app.input).count();
+    app.highlighted = if app.filtered_len > 0 {
+        Some(app.items.filter(&app.input).get(app.selected).unwrap())
+    } else {
+        None
+    };
+
+    Ok(app)
 }

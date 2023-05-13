@@ -75,7 +75,7 @@ fn main() {
         Mode::AddPath => add_path(&args),
         Mode::Tui => {
             let items = load_saved_paths();
-            if let Ok(Some(path)) = tui_run(items) {
+            if let Ok(Some(path)) = tui_run(&items) {
                 println!("Selected path: {:?}", path);
             }
         }

@@ -18,7 +18,7 @@ use event_handler::handle_event;
 use tui_state::TuiState;
 use tui_ui::ui;
 
-pub fn tui_run(items: PathItems) -> Result<Option<PathItem>, Box<dyn Error>> {
+pub fn tui_run(items: &PathItems) -> Result<Option<PathItem>, Box<dyn Error>> {
     // setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -27,8 +27,8 @@ pub fn tui_run(items: PathItems) -> Result<Option<PathItem>, Box<dyn Error>> {
     let mut terminal = Terminal::new(backend)?;
 
     // create app and run it
-    let app = TuiState::new(items);
-    let res = run_app(&mut terminal, app);
+    let mut app = TuiState::new(items);
+    let res = run_app(&mut terminal, &mut app);
 
     // restore terminal
     disable_raw_mode()?;
@@ -46,20 +46,21 @@ pub fn tui_run(items: PathItems) -> Result<Option<PathItem>, Box<dyn Error>> {
     Ok(res?)
 }
 
-fn run_app<B: Backend>(
+fn run_app<'a, B: Backend>(
     terminal: &mut Terminal<B>,
-    mut app: TuiState,
+    app: &'a mut TuiState<'a>,
 ) -> io::Result<Option<PathItem>> {
+    let mut state = app.state_mut();
     loop {
-        terminal.draw(|f| ui(f, &mut app))?;
-        handle_event(&mut app)?;
+        terminal.draw(|f| ui(f, state))?;
+        state = handle_event(state)?;
 
-        if app.quit {
+        if state.quit {
             return Ok(None);
         }
 
-        if let Some(selected) = app.selected_path {
-            return Ok(Some(selected));
+        if let Some(selected) = &state.selected_path {
+            return Ok(Some(selected.clone()));
         }
     }
 }
