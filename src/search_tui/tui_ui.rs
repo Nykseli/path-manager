@@ -81,12 +81,12 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut TuiState) {
         .margin(2)
         .constraints(
             [
+                // Input help message
+                Constraint::Length(1),
                 // Path description
                 Constraint::Length(3),
                 // List of paths
                 Constraint::Min(1),
-                // Input help message
-                Constraint::Length(1),
                 // Input
                 Constraint::Length(3),
             ]
@@ -94,16 +94,16 @@ pub fn ui<B: Backend>(f: &mut Frame<B>, app: &mut TuiState) {
         )
         .split(f.size());
 
+    let help_message = help_message_widget(app);
+    f.render_widget(help_message, chunks[0]);
+
     // TODO: Display extra info about the path, split text based on the width of
     //       current terminal window
     let description = path_description_widget();
-    f.render_widget(description, chunks[0]);
+    f.render_widget(description, chunks[1]);
 
     let paths = paths_view_widget(app);
-    f.render_widget(paths, chunks[1]);
-
-    let help_message = help_message_widget(app);
-    f.render_widget(help_message, chunks[2]);
+    f.render_widget(paths, chunks[2]);
 
     match app.input_mode {
         InputMode::Select =>
