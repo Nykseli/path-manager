@@ -65,7 +65,7 @@ fn run_app<'a, B: Backend>(
             return Ok(None);
         }
 
-        if let Some(selected) = &state.selected_path {
+        if let Some(_) = &state.selected_path {
             return Ok(Some(state));
         }
     }
