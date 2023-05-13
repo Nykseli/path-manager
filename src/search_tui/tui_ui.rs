@@ -8,9 +8,9 @@ use tui::{
 };
 use unicode_width::UnicodeWidthStr;
 
-use super::tui_state::{InputMode, TuiInnerState};
+use super::tui_state::{InputMode, TuiState};
 
-fn help_message_widget<'a>(app: &'a TuiInnerState<'a>) -> Paragraph<'a> {
+fn help_message_widget<'a>(app: &'a TuiState<'a>) -> Paragraph<'a> {
     let (msg, style) = match app.input_mode {
         InputMode::Select => (
             vec![
@@ -39,7 +39,7 @@ fn help_message_widget<'a>(app: &'a TuiInnerState<'a>) -> Paragraph<'a> {
     Paragraph::new(text)
 }
 
-fn input_widget<'a>(app: &'a TuiInnerState<'a>) -> Paragraph<'a> {
+fn input_widget<'a>(app: &'a TuiState<'a>) -> Paragraph<'a> {
     Paragraph::new(app.input.as_ref())
         .style(match app.input_mode {
             InputMode::Select => Style::default(),
@@ -48,7 +48,7 @@ fn input_widget<'a>(app: &'a TuiInnerState<'a>) -> Paragraph<'a> {
         .block(Block::default().borders(Borders::ALL).title("Input"))
 }
 
-fn paths_view_widget<'a>(app: &'a TuiInnerState<'a>) -> List<'a> {
+fn paths_view_widget<'a>(app: &'a TuiState<'a>) -> List<'a> {
     // TODO: show name and optional description!
     let paths: Vec<ListItem> = app
         .items
@@ -69,7 +69,7 @@ fn paths_view_widget<'a>(app: &'a TuiInnerState<'a>) -> List<'a> {
         .block(Block::default().borders(Borders::ALL).title("Paths"))
 }
 
-fn path_description_widget<'a>(app: &'a TuiInnerState<'a>) -> Paragraph<'a> {
+fn path_description_widget<'a>(app: &'a TuiState<'a>) -> Paragraph<'a> {
     if app.highlighted.is_none() {
         return Paragraph::new("No item seleceted");
     }
@@ -93,7 +93,7 @@ fn path_description_widget<'a>(app: &'a TuiInnerState<'a>) -> Paragraph<'a> {
         .block(Block::default().borders(Borders::all()).title("Info"))
 }
 
-pub fn ui<'a, B: Backend>(f: &mut Frame<B>, app: &'a TuiInnerState<'a>) {
+pub fn ui<'a, B: Backend>(f: &mut Frame<B>, app: &'a TuiState<'a>) {
     let chunks = Layout::default()
         .direction(Direction::Vertical)
         .margin(2)

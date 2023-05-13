@@ -1,9 +1,9 @@
 use crossterm::event::{self, Event, KeyCode, KeyModifiers};
 use std::io;
 
-use super::tui_state::{InputMode, TuiInnerState};
+use super::tui_state::{InputMode, TuiState};
 
-pub fn handle_event<'a>(app: &'a mut TuiInnerState<'a>) -> io::Result<&'a mut TuiInnerState<'a>> {
+pub fn handle_event<'a>(app: &'a mut TuiState<'a>) -> io::Result<&'a mut TuiState<'a>> {
     if let Event::Key(key) = event::read()? {
         // Ctrl-C will close out the program instantly
         if key.modifiers.contains(KeyModifiers::CONTROL) && key.code == KeyCode::Char('c') {
