@@ -1,6 +1,6 @@
 use tui::{
     backend::Backend,
-    layout::{Constraint, Direction, Layout},
+    layout::{Constraint, Corner, Direction, Layout},
     style::{Color, Modifier, Style},
     text::{Span, Spans, Text},
     widgets::{Block, Borders, List, ListItem, Paragraph},
@@ -50,7 +50,7 @@ fn input_widget(app: &TuiState) -> Paragraph {
 
 fn paths_view_widget(app: &mut TuiState) -> List {
     // TODO: show name and optional description!
-    let paths: Vec<ListItem> = app
+    let mut paths: Vec<ListItem> = app
         .items
         .filter_paths(&app.input)
         .enumerate()
@@ -67,7 +67,9 @@ fn paths_view_widget(app: &mut TuiState) -> List {
     // TODO: handle this more cleanly
     app.filtered_len = paths.len();
 
-    List::new(paths).block(Block::default().borders(Borders::ALL).title("Paths"))
+    List::new(paths)
+        .start_corner(Corner::BottomLeft)
+        .block(Block::default().borders(Borders::ALL).title("Paths"))
 }
 
 fn path_description_widget() -> Paragraph<'static> {

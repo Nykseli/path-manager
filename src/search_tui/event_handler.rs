@@ -21,14 +21,14 @@ pub fn handle_event(app: &mut TuiState) -> io::Result<()> {
                 }
                 // j is down in vi!
                 KeyCode::Down | KeyCode::Char('j') => {
-                    if app.filtered_len > 0 && app.selected < app.filtered_len - 1 {
-                        app.selected += 1;
+                    if app.selected > 0 {
+                        app.selected -= 1;
                     }
                 }
                 // k is up in vi!
                 KeyCode::Up | KeyCode::Char('k') => {
-                    if app.selected > 0 {
-                        app.selected -= 1;
+                    if app.filtered_len > 0 && app.selected < app.filtered_len - 1 {
+                        app.selected += 1;
                     }
                 }
                 KeyCode::Enter => {
