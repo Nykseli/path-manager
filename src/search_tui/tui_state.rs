@@ -16,7 +16,7 @@ pub struct TuiInnerState<'a> {
     pub filtered_len: usize,
     pub items: &'a PathItems,
     pub quit: bool,
-    pub selected_path: Option<PathItem>,
+    pub selected_path: Option<&'a PathItem>,
 }
 
 /// App holds the state of the application

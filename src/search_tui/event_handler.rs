@@ -33,13 +33,8 @@ pub fn handle_event<'a>(app: &'a mut TuiInnerState<'a>) -> io::Result<&'a mut Tu
                 }
                 KeyCode::Enter => {
                     if app.filtered_len > 0 {
-                        app.selected_path = Some(
-                            app.items
-                                .filter_paths(&app.input)
-                                .nth(app.selected)
-                                .unwrap()
-                                .clone(),
-                        );
+                        app.selected_path =
+                            Some(app.items.filter(&app.input).get(app.selected).unwrap());
                     }
                 }
                 _ => {}

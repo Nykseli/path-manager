@@ -18,6 +18,8 @@ use event_handler::handle_event;
 use tui_state::TuiState;
 use tui_ui::ui;
 
+use self::tui_state::TuiInnerState;
+
 pub fn tui_run(items: &PathItems) -> Result<Option<PathItem>, Box<dyn Error>> {
     // setup terminal
     enable_raw_mode()?;
@@ -43,13 +45,17 @@ pub fn tui_run(items: &PathItems) -> Result<Option<PathItem>, Box<dyn Error>> {
         eprintln!("{:?}", err)
     }
 
-    Ok(res?)
+    if let Some(path) = res? {
+        Ok(path.selected_path.map(|p| p.clone()))
+    } else {
+        Ok(None)
+    }
 }
 
 fn run_app<'a, B: Backend>(
     terminal: &mut Terminal<B>,
     app: &'a mut TuiState<'a>,
-) -> io::Result<Option<PathItem>> {
+) -> io::Result<Option<&'a TuiInnerState<'a>>> {
     let mut state = app.state_mut();
     loop {
         terminal.draw(|f| ui(f, state))?;
@@ -60,7 +66,7 @@ fn run_app<'a, B: Backend>(
         }
 
         if let Some(selected) = &state.selected_path {
-            return Ok(Some(selected.clone()));
+            return Ok(Some(state));
         }
     }
 }
