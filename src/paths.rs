@@ -24,6 +24,10 @@ impl PathItems {
         Self { paths: Vec::new() }
     }
 
+    pub fn sort(&mut self) {
+        self.paths.sort_by(|a, b| a.full_path.cmp(&b.full_path))
+    }
+
     /// Add new path, overriding old entries based oh full_path
     pub fn add_path(&mut self, path: PathItem) {
         let idx = self.paths.iter().position(|p| p == &path);

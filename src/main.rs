@@ -76,7 +76,8 @@ fn main() {
     match args.mode() {
         Mode::AddPath => add_path(&args),
         Mode::Tui => {
-            let items = load_saved_paths();
+            let mut items = load_saved_paths();
+            items.sort();
             if let Ok(Some(path)) = tui_run(&items) {
                 let tmux = Tmux::new();
                 let tmux = tmux.init();
