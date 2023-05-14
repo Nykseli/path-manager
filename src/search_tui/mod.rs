@@ -44,7 +44,7 @@ pub fn tui_run(items: &PathItems) -> Result<Option<PathItem>, Box<dyn Error>> {
     }
 
     if let Some(path) = res? {
-        Ok(path.selected_path.map(|p| p.clone()))
+        Ok(path.selected_path.cloned())
     } else {
         Ok(None)
     }
@@ -63,7 +63,7 @@ fn run_app<'a, B: Backend>(
             return Ok(None);
         }
 
-        if let Some(_) = &state.selected_path {
+        if state.selected_path.is_some() {
             return Ok(Some(state));
         }
     }
