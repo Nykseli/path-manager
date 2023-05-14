@@ -9,7 +9,9 @@ mod cli;
 mod config_path;
 mod paths;
 mod search_tui;
+mod tmux;
 use cli::{Args, Mode};
+use tmux::Tmux;
 
 use crate::config_path::{load_saved_paths, save_paths};
 
@@ -76,7 +78,9 @@ fn main() {
         Mode::Tui => {
             let items = load_saved_paths();
             if let Ok(Some(path)) = tui_run(&items) {
-                println!("Selected path: {:?}", path);
+                let tmux = Tmux::new();
+                let tmux = tmux.init();
+                tmux.cd_into(&path.full_path);
             }
         }
     };
