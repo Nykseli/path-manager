@@ -13,7 +13,7 @@ pub fn handle_event<'a>(app: &'a mut TuiState<'a>) -> io::Result<&'a mut TuiStat
 
         match app.input_mode {
             InputMode::Select => match key.code {
-                KeyCode::Char('e') => {
+                KeyCode::Char('s') => {
                     app.input_mode = InputMode::Search;
                 }
                 KeyCode::Char('q') => {

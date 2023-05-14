@@ -17,7 +17,7 @@ fn help_message_widget<'a>(app: &'a TuiState<'a>) -> Paragraph<'a> {
                 Span::raw("Press "),
                 Span::styled("q", Style::default().add_modifier(Modifier::BOLD)),
                 Span::raw(" to exit, "),
-                Span::styled("e", Style::default().add_modifier(Modifier::BOLD)),
+                Span::styled("s", Style::default().add_modifier(Modifier::BOLD)),
                 Span::raw(" to start searching."),
             ],
             Style::default(),
@@ -49,7 +49,6 @@ fn input_widget<'a>(app: &'a TuiState<'a>) -> Paragraph<'a> {
 }
 
 fn paths_view_widget<'a>(app: &'a TuiState<'a>) -> List<'a> {
-    // TODO: show name and optional description!
     let paths: Vec<ListItem> = app
         .items
         .filter_paths(&app.input)
