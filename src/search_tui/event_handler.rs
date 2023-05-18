@@ -1,7 +1,7 @@
 use crossterm::event::{self, Event, KeyCode, KeyModifiers};
 use std::io;
 
-use super::tui_state::{InputMode, TuiState};
+use super::tui_state::{InputMode, PathEditCommand, TuiState};
 
 pub fn handle_event<'a>(app: &'a mut TuiState<'a>) -> io::Result<&'a mut TuiState<'a>> {
     if let Event::Key(key) = event::read()? {
@@ -39,6 +39,10 @@ pub fn handle_event<'a>(app: &'a mut TuiState<'a>) -> io::Result<&'a mut TuiStat
                     if !app.filtered.is_empty() {
                         app.selected_path = app.highlighted;
                     }
+                }
+                KeyCode::Char('d') => {
+                    // TODO: Only if we're in the edit mode
+                    app.set_path_command(PathEditCommand::Delete);
                 }
                 _ => {}
             },

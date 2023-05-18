@@ -1,4 +1,10 @@
+use std::collections::HashMap;
+
 use crate::paths::{PathItem, PathItems};
+
+pub enum PathEditCommand {
+    Delete,
+}
 
 pub enum InputMode {
     Select,
@@ -18,6 +24,7 @@ pub struct TuiState<'a> {
     pub items: &'a PathItems,
     pub quit: bool,
     pub selected_path: Option<&'a PathItem>,
+    pub edits: HashMap<&'a PathItem, PathEditCommand>,
 }
 
 impl<'a> TuiState<'a> {
@@ -32,6 +39,7 @@ impl<'a> TuiState<'a> {
             selected: 0,
             selected_path: None,
             highlighted: None,
+            edits: HashMap::new(),
         };
 
         state.set_highlighted();
@@ -46,5 +54,28 @@ impl<'a> TuiState<'a> {
         } else {
             None
         }
+    }
+
+    /// Set command to the currently highlighted item
+    pub fn set_path_command(&mut self, cmd: PathEditCommand) {
+        let highlighted = if let Some(item) = self.highlighted {
+            item
+        } else {
+            return;
+        };
+
+        match cmd {
+            PathEditCommand::Delete => {
+                if self.edits.contains_key(highlighted) {
+                    self.edits.remove(highlighted);
+                } else {
+                    self.edits.insert(highlighted, cmd);
+                }
+            }
+        }
+    }
+
+    pub fn path_command(&self, item: &PathItem) -> Option<&PathEditCommand> {
+        self.edits.get(item)
     }
 }

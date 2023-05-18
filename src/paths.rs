@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::hash::Hash;
 
 // TODO: remove Clone!
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -11,6 +12,15 @@ pub struct PathItem {
 impl PartialEq for PathItem {
     fn eq(&self, other: &Self) -> bool {
         self.full_path == other.full_path
+    }
+}
+
+impl Eq for PathItem {}
+
+/// Hasing for PathItem assumes that are paths in the whole program are unique
+impl Hash for PathItem {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        state.write(self.full_path.as_bytes())
     }
 }
 

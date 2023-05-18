@@ -8,7 +8,9 @@ use tui::{
 };
 use unicode_width::UnicodeWidthStr;
 
-use super::tui_state::{InputMode, TuiState};
+use crate::paths::PathItem;
+
+use super::tui_state::{InputMode, PathEditCommand, TuiState};
 
 fn help_message_widget<'a>(app: &'a TuiState<'a>) -> Paragraph<'a> {
     let (msg, style) = match app.input_mode {
@@ -48,6 +50,20 @@ fn input_widget<'a>(app: &'a TuiState<'a>) -> Paragraph<'a> {
         .block(Block::default().borders(Borders::ALL).title("Input"))
 }
 
+fn cmd_delete_style() -> Style {
+    Style::default().bg(Color::Red)
+}
+
+fn paths_view_widget_style<'a>(app: &'a TuiState<'a>, item: &PathItem) -> Style {
+    if let Some(cmd) = app.path_command(item) {
+        return match cmd {
+            PathEditCommand::Delete => cmd_delete_style(),
+        };
+    }
+
+    Style::default()
+}
+
 fn paths_view_widget<'a>(app: &'a TuiState<'a>) -> List<'a> {
     let paths: Vec<ListItem> = app
         .filtered
@@ -55,10 +71,11 @@ fn paths_view_widget<'a>(app: &'a TuiState<'a>) -> List<'a> {
         .enumerate()
         .map(|(i, m)| {
             let content = vec![Spans::from(Span::raw(format!("{}: {}", i, m.full_path)))];
+            let style = paths_view_widget_style(app, m);
             if i == app.selected {
-                ListItem::new(content).style(Style::default().add_modifier(Modifier::REVERSED))
+                ListItem::new(content).style(style.add_modifier(Modifier::REVERSED))
             } else {
-                ListItem::new(content)
+                ListItem::new(content).style(style)
             }
         })
         .collect();
