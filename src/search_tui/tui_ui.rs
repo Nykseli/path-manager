@@ -50,8 +50,8 @@ fn input_widget<'a>(app: &'a TuiState<'a>) -> Paragraph<'a> {
 
 fn paths_view_widget<'a>(app: &'a TuiState<'a>) -> List<'a> {
     let paths: Vec<ListItem> = app
-        .items
-        .filter_paths(&app.input)
+        .filtered
+        .iter()
         .enumerate()
         .map(|(i, m)| {
             let content = vec![Spans::from(Span::raw(format!("{}: {}", i, m.full_path)))];

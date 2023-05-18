@@ -11,6 +11,8 @@ pub fn handle_event<'a>(app: &'a mut TuiState<'a>) -> io::Result<&'a mut TuiStat
             return Ok(app);
         }
 
+        let mut input_changed = false;
+
         match app.input_mode {
             InputMode::Select => match key.code {
                 KeyCode::Char('s') => {
@@ -23,17 +25,19 @@ pub fn handle_event<'a>(app: &'a mut TuiState<'a>) -> io::Result<&'a mut TuiStat
                 KeyCode::Down | KeyCode::Char('j') => {
                     if app.selected > 0 {
                         app.selected -= 1;
+                        app.set_highlighted();
                     }
                 }
                 // k is up in vi!
                 KeyCode::Up | KeyCode::Char('k') => {
-                    if app.filtered_len > 0 && app.selected < app.filtered_len - 1 {
+                    if !app.filtered.is_empty() && app.selected < app.filtered.len() - 1 {
                         app.selected += 1;
+                        app.set_highlighted();
                     }
                 }
                 KeyCode::Enter => {
-                    if app.filtered_len > 0 {
-                        app.selected_path = app.highlighted
+                    if !app.filtered.is_empty() {
+                        app.selected_path = app.highlighted;
                     }
                 }
                 _ => {}
@@ -41,9 +45,11 @@ pub fn handle_event<'a>(app: &'a mut TuiState<'a>) -> io::Result<&'a mut TuiStat
             InputMode::Search => match key.code {
                 KeyCode::Char(c) => {
                     app.input.push(c);
+                    input_changed = true;
                 }
                 KeyCode::Backspace => {
                     app.input.pop();
+                    input_changed = true;
                 }
                 KeyCode::Esc | KeyCode::Enter => {
                     app.input_mode = InputMode::Select;
@@ -51,15 +57,12 @@ pub fn handle_event<'a>(app: &'a mut TuiState<'a>) -> io::Result<&'a mut TuiStat
                 _ => {}
             },
         }
-    }
 
-    // TODO: handle this more cleanly. Now were filtering results here, and in the UI
-    app.filtered_len = app.items.filter_paths(&app.input).count();
-    app.highlighted = if app.filtered_len > 0 {
-        Some(app.items.filter(&app.input).get(app.selected).unwrap())
-    } else {
-        None
-    };
+        if input_changed {
+            app.filtered = app.items.filter(&app.input);
+            app.set_highlighted();
+        }
+    }
 
     Ok(app)
 }

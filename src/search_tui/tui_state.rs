@@ -14,7 +14,7 @@ pub struct TuiState<'a> {
     /// Index of selected PathItem. In filtered list, not in the orignal full list
     pub selected: usize,
     pub highlighted: Option<&'a PathItem>,
-    pub filtered_len: usize,
+    pub filtered: Vec<&'a PathItem>,
     pub items: &'a PathItems,
     pub quit: bool,
     pub selected_path: Option<&'a PathItem>,
@@ -22,15 +22,29 @@ pub struct TuiState<'a> {
 
 impl<'a> TuiState<'a> {
     pub fn new(items: &'a PathItems) -> Self {
-        Self {
+        let mut state = Self {
             items,
             input: String::new(),
+            // Empty string in a filter just copies everything
+            filtered: items.filter(""),
             input_mode: InputMode::Search,
             quit: false,
             selected: 0,
-            filtered_len: 0,
             selected_path: None,
             highlighted: None,
+        };
+
+        state.set_highlighted();
+        state
+    }
+
+    /// Set `highlighted` member to match `selected`
+    pub fn set_highlighted(&mut self) {
+        self.highlighted = if !self.filtered.is_empty() {
+            // Copies reference (pointer) not the struct itself!
+            self.filtered.get(self.selected).copied()
+        } else {
+            None
         }
     }
 }
