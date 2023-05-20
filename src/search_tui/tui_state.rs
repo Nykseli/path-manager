@@ -80,4 +80,21 @@ impl<'a> TuiState<'a> {
     pub fn path_command(&self, item: &PathItem) -> Option<&PathEditCommand> {
         self.edits.get(item)
     }
+
+    pub fn edited_items(&self) -> Option<PathItems> {
+        if self.edits.is_empty() {
+            return None;
+        }
+
+        // TODO: print deleted items in verbose mode
+        // We only need to check if the path exsist in edits since we only have a delete edit
+        let paths = self
+            .items
+            .paths
+            .clone()
+            .into_iter()
+            .filter(|path| !self.edits.contains_key(path))
+            .collect();
+        Some(PathItems { paths })
+    }
 }

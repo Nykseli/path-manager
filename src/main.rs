@@ -1,5 +1,5 @@
 use clap::Parser;
-use search_tui::tui_run;
+use search_tui::{run_edit_tui, run_select_tui};
 use std::{
     fs,
     io::{self, BufRead, Write},
@@ -72,7 +72,11 @@ fn main() {
         Mode::Tui { edit } => {
             let mut items = load_saved_paths();
             items.sort();
-            if let Ok(Some(path)) = tui_run(&items, *edit) {
+            if *edit {
+                if let Ok(Some(items)) = run_edit_tui(&items) {
+                    save_paths(items);
+                }
+            } else if let Ok(Some(path)) = run_select_tui(&items) {
                 let tmux = Tmux::new();
                 let tmux = tmux.init();
                 tmux.cd_into(&path.full_path);
