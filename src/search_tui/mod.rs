@@ -18,7 +18,7 @@ use event_handler::handle_event;
 use tui_state::TuiState;
 use tui_ui::ui;
 
-pub fn tui_run(items: &PathItems) -> Result<Option<PathItem>, Box<dyn Error>> {
+pub fn tui_run(items: &PathItems, edit_mode: bool) -> Result<Option<PathItem>, Box<dyn Error>> {
     // setup terminal
     enable_raw_mode()?;
     let mut stdout = io::stdout();
@@ -27,7 +27,7 @@ pub fn tui_run(items: &PathItems) -> Result<Option<PathItem>, Box<dyn Error>> {
     let mut terminal = Terminal::new(backend)?;
 
     // create app and run it
-    let mut app = TuiState::new(items);
+    let mut app = TuiState::new(items, edit_mode);
     let res = run_app(&mut terminal, &mut app);
 
     // restore terminal

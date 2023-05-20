@@ -41,8 +41,9 @@ pub fn handle_event<'a>(app: &'a mut TuiState<'a>) -> io::Result<&'a mut TuiStat
                     }
                 }
                 KeyCode::Char('d') => {
-                    // TODO: Only if we're in the edit mode
-                    app.set_path_command(PathEditCommand::Delete);
+                    if app.edit_mode {
+                        app.set_path_command(PathEditCommand::Delete);
+                    }
                 }
                 _ => {}
             },

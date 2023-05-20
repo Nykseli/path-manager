@@ -2,8 +2,13 @@ use clap::{Parser, Subcommand};
 
 #[derive(Debug, Subcommand)]
 pub enum Mode {
-    AddPath { path: String },
-    Tui,
+    AddPath {
+        path: String,
+    },
+    Tui {
+        #[arg(short, long, help = "Launch TUI in edit mode")]
+        edit: bool,
+    },
 }
 
 #[derive(Debug, Parser)]

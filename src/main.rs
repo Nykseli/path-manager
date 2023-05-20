@@ -69,10 +69,10 @@ fn main() {
     let args = Args::parse();
     match args.mode() {
         Mode::AddPath { path } => add_path(path),
-        Mode::Tui => {
+        Mode::Tui { edit } => {
             let mut items = load_saved_paths();
             items.sort();
-            if let Ok(Some(path)) = tui_run(&items) {
+            if let Ok(Some(path)) = tui_run(&items, *edit) {
                 let tmux = Tmux::new();
                 let tmux = tmux.init();
                 tmux.cd_into(&path.full_path);

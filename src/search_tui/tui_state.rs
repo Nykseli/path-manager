@@ -24,13 +24,15 @@ pub struct TuiState<'a> {
     pub items: &'a PathItems,
     pub quit: bool,
     pub selected_path: Option<&'a PathItem>,
+    pub edit_mode: bool,
     pub edits: HashMap<&'a PathItem, PathEditCommand>,
 }
 
 impl<'a> TuiState<'a> {
-    pub fn new(items: &'a PathItems) -> Self {
+    pub fn new(items: &'a PathItems, edit_mode: bool) -> Self {
         let mut state = Self {
             items,
+            edit_mode,
             input: String::new(),
             // Empty string in a filter just copies everything
             filtered: items.filter(""),
