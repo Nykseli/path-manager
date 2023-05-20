@@ -12,7 +12,7 @@ pub struct Args {
     #[arg(
         short = 'm',
         long = "mode",
-        help = "Local port to bind to (9090 if unset)",
+        help = "Which mode the program is launch in",
         value_enum
     )]
     mode: Option<Mode>,
