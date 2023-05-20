@@ -15,18 +15,12 @@ use tmux::Tmux;
 
 use crate::config_path::{load_saved_paths, save_paths};
 
-fn add_path(args: &Args) {
-    let path: String = if let Some(path) = args.path() {
-        fs::canonicalize(path)
-            .unwrap_or_else(|_| panic!("Path '{path}' was not found"))
-            .to_str()
-            .unwrap()
-            .into()
-    } else {
-        // TODO: handle this in cli.rs
-        eprintln!("Missing path argument in add-path mode");
-        std::process::exit(1);
-    };
+fn add_path(path: &str) {
+    let path: String = fs::canonicalize(path)
+        .unwrap_or_else(|_| panic!("Path '{path}' was not found"))
+        .to_str()
+        .unwrap()
+        .into();
 
     let stdin = io::stdin();
     let mut paths = load_saved_paths();
@@ -74,7 +68,7 @@ fn add_path(args: &Args) {
 fn main() {
     let args = Args::parse();
     match args.mode() {
-        Mode::AddPath => add_path(&args),
+        Mode::AddPath { path } => add_path(path),
         Mode::Tui => {
             let mut items = load_saved_paths();
             items.sort();
