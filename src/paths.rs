@@ -1,12 +1,45 @@
 use serde::{Deserialize, Serialize};
 use std::hash::Hash;
 
-// TODO: remove Clone!
-#[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct PathItem {
+/* Implementing Custom Deserializer is painful so let's do this this the hacky way */
+#[derive(Debug, Serialize, Deserialize)]
+struct _PathItem {
     pub name: String,
     pub full_path: String,
     pub description: String,
+}
+
+#[derive(Debug, Default, Serialize, Deserialize)]
+struct _PathItems {
+    pub paths: Vec<_PathItem>,
+}
+/* End of private helper structs */
+
+// TODO: remove Clone!
+#[derive(Debug, Clone)]
+pub struct PathItem {
+    pub name: String,
+    /// Lowercase name
+    lname: String,
+    pub full_path: String,
+    /// Lowercase full_path
+    lfull_path: String,
+    pub description: String,
+}
+
+impl PathItem {
+    pub fn new(name: String, full_path: String, description: String) -> Self {
+        let lname = name.to_lowercase();
+        let lfull_path = full_path.to_lowercase();
+
+        Self {
+            name,
+            lname,
+            full_path,
+            lfull_path,
+            description,
+        }
+    }
 }
 
 impl PartialEq for PathItem {
@@ -24,14 +57,40 @@ impl Hash for PathItem {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Default)]
 pub struct PathItems {
     pub paths: Vec<PathItem>,
 }
 
 impl PathItems {
-    pub fn new() -> Self {
-        Self { paths: Vec::new() }
+    /// Turn structure into formatted json string
+    pub fn into_json(self) -> String {
+        let paths: Vec<_PathItem> = self
+            .paths
+            .into_iter()
+            .map(|p| _PathItem {
+                name: p.name,
+                full_path: p.full_path,
+                description: p.description,
+            })
+            .collect();
+        serde_json::to_string_pretty(&_PathItems { paths }).unwrap()
+    }
+    /// Create PathItems from json string
+    pub fn from_json(json: &str) -> Self {
+        let items: _PathItems = serde_json::from_str(json).unwrap_or_default();
+        let paths: Vec<PathItem> = items
+            .paths
+            .into_iter()
+            .map(|p| PathItem {
+                lname: p.name.to_lowercase(),
+                lfull_path: p.full_path.to_lowercase(),
+                name: p.name,
+                full_path: p.full_path,
+                description: p.description,
+            })
+            .collect();
+        Self { paths }
     }
 
     pub fn sort(&mut self) {
@@ -65,19 +124,13 @@ impl PathItems {
             .iter()
             .filter(move |&path| {
                 for word in &words {
-                    if !path.full_path.contains(word) && !path.name.to_lowercase().contains(word) {
+                    if !path.lfull_path.contains(word) && !path.lname.contains(word) {
                         return false;
                     }
                 }
                 true
             })
             .collect()
-    }
-}
-
-impl Default for PathItems {
-    fn default() -> Self {
-        PathItems::new()
     }
 }
 
@@ -91,12 +144,16 @@ mod tests {
             paths: vec![
                 PathItem {
                     name: "Home Name".into(),
+                    lname: "Home Name".to_lowercase().into(),
                     full_path: "/home/path".into(),
+                    lfull_path: "/home/path".into(),
                     description: "The path user's home folder".into(),
                 },
                 PathItem {
                     name: "Secret Way!".into(),
+                    lname: "Secret Way!".to_lowercase().into(),
                     full_path: "/root/path".into(),
+                    lfull_path: "/root/path".into(),
                     description: "Secret path for a root user".into(),
                 },
             ],
@@ -117,12 +174,16 @@ mod tests {
             paths: vec![
                 PathItem {
                     name: "Home Name Word".into(),
+                    lname: "Home Name Word".to_lowercase().into(),
                     full_path: "/home/path/user".into(),
+                    lfull_path: "/home/path/user".into(),
                     description: "The path user's home folder".into(),
                 },
                 PathItem {
                     name: "Secret Way Word!".into(),
+                    lname: "Secret Way Word!".to_lowercase().into(),
                     full_path: "/root/path/".into(),
+                    lfull_path: "/root/path/".into(),
                     description: "Secret path for a root user".into(),
                 },
             ],

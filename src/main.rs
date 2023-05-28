@@ -55,11 +55,11 @@ fn add_path(path: &str) {
         let _ = stdin.lock().read_line(&mut description_buf).unwrap();
     }
 
-    let new_path = paths::PathItem {
-        description: description_buf.trim().into(),
-        name: name_buf.trim().into(),
-        full_path: path.trim().into(),
-    };
+    let new_path = paths::PathItem::new(
+        name_buf.trim().into(),
+        path.trim().into(),
+        description_buf.trim().into(),
+    );
 
     paths.add_path(new_path);
     save_paths(paths);

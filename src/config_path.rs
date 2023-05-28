@@ -36,12 +36,12 @@ fn read_paths_file() -> String {
 /// PathItems will be empty if no files are saved.
 pub fn load_saved_paths() -> PathItems {
     let file_data = read_paths_file();
-    serde_json::from_str(&file_data).unwrap_or_default()
+    PathItems::from_json(&file_data)
 }
 
 pub fn save_paths(items: PathItems) {
     let path = paths_file();
-    let json_str = serde_json::to_string_pretty(&items).unwrap();
+    let json_str = items.into_json();
     let mut output = fs::File::create(path).expect("Cannot paths.json file");
     write!(output, "{json_str}").unwrap();
 }
