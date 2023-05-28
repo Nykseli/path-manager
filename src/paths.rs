@@ -53,12 +53,23 @@ impl PathItems {
     }
 
     /// Find Path items that match the search
-    /// search will be OK if [search] is part of PathItem::name or PathItem::full_path
+    /// search will be OK if all words in [search] are part of PathItem::name or PathItem::full_path
     pub fn filter<'a>(&'a self, search: &str) -> Vec<&'a PathItem> {
+        let words: Vec<&str> = search.split_whitespace().collect();
+        // Search is empty or only contains whitespace
+        if words.is_empty() {
+            return self.paths.iter().collect();
+        }
+
         self.paths
             .iter()
             .filter(move |&path| {
-                path.full_path.contains(search) || path.name.to_lowercase().contains(search)
+                for word in &words {
+                    if !path.full_path.contains(word) && !path.name.to_lowercase().contains(word) {
+                        return false;
+                    }
+                }
+                true
             })
             .collect()
     }
