@@ -313,7 +313,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tui",
- "unicode-width",
 ]
 
 [[package]]
