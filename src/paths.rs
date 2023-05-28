@@ -102,10 +102,37 @@ mod tests {
             ],
         };
 
-        assert_eq!(items.filter_paths("").count(), 2);
-        assert_eq!(items.filter_paths("path").count(), 2);
-        assert_eq!(items.filter_paths("name").count(), 1);
-        assert_eq!(items.filter_paths("root").count(), 1);
-        assert_eq!(items.filter_paths("foobar").count(), 0);
+        assert_eq!(items.filter("").len(), 2);
+        assert_eq!(items.filter("   ").len(), 2);
+        assert_eq!(items.filter("\t  ").len(), 2);
+        assert_eq!(items.filter("path").len(), 2);
+        assert_eq!(items.filter("name").len(), 1);
+        assert_eq!(items.filter("root").len(), 1);
+        assert_eq!(items.filter("foobar").len(), 0);
+    }
+
+    #[test]
+    fn test_words_find() {
+        let items = PathItems {
+            paths: vec![
+                PathItem {
+                    name: "Home Name Word".into(),
+                    full_path: "/home/path/user".into(),
+                    description: "The path user's home folder".into(),
+                },
+                PathItem {
+                    name: "Secret Way Word!".into(),
+                    full_path: "/root/path/".into(),
+                    description: "Secret path for a root user".into(),
+                },
+            ],
+        };
+
+        assert_eq!(items.filter("home word").len(), 1);
+        assert_eq!(items.filter("home user").len(), 1);
+        assert_eq!(items.filter("secret word").len(), 1);
+        assert_eq!(items.filter("secret       word").len(), 1);
+        assert_eq!(items.filter("secret home word").len(), 0);
+        assert_eq!(items.filter("root user").len(), 0);
     }
 }
