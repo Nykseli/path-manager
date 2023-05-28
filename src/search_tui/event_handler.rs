@@ -48,12 +48,41 @@ pub fn handle_event<'a>(app: &'a mut TuiState<'a>) -> io::Result<&'a mut TuiStat
                 _ => {}
             },
             InputMode::Search => match key.code {
+                KeyCode::End => {
+                    app.cursor = app.input.chars().count() as u16;
+                }
+                KeyCode::Char('e') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                    app.cursor = app.input.chars().count() as u16;
+                }
+                KeyCode::Home => {
+                    app.cursor = 0;
+                }
+                KeyCode::Char('a') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                    app.cursor = 0;
+                }
+                KeyCode::Left => {
+                    app.cursor = app.cursor.saturating_sub(1);
+                }
+                KeyCode::Right => {
+                    // as usize cast is safe since u16 always fits in usize
+                    app.cursor = if (app.cursor as usize) < app.input.chars().count() {
+                        app.cursor + 1
+                    } else {
+                        app.cursor
+                    }
+                }
                 KeyCode::Char(c) => {
-                    app.input.push(c);
+                    // as usize cast is safe since u16 always fits in usize
+                    app.input.insert(app.cursor as usize, c);
+                    app.cursor += 1;
                     input_changed = true;
                 }
                 KeyCode::Backspace => {
-                    app.input.pop();
+                    app.cursor = app.cursor.saturating_sub(1);
+                    if !app.input.is_empty() {
+                        // as usize cast is safe since u16 always fits in usize
+                        app.input.remove(app.cursor as usize);
+                    }
                     input_changed = true;
                 }
                 KeyCode::Esc | KeyCode::Enter => {

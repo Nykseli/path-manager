@@ -6,7 +6,6 @@ use tui::{
     widgets::{Block, Borders, List, ListItem, Paragraph},
     Frame,
 };
-use unicode_width::UnicodeWidthStr;
 
 use crate::paths::PathItem;
 
@@ -148,7 +147,7 @@ pub fn ui<'a, B: Backend>(f: &mut Frame<B>, app: &'a TuiState<'a>) {
             // Make the cursor visible and ask tui-rs to put it at the specified coordinates after rendering
             f.set_cursor(
                 // Put cursor past the end of the input text
-                chunks[3].x + app.input.width() as u16 + 1,
+                chunks[3].x + app.cursor + 1,
                 // Move one line down, from the border to the input line
                 chunks[3].y + 1,
             )

@@ -15,6 +15,8 @@ pub enum InputMode {
 pub struct TuiState<'a> {
     /// Current value of the input box
     pub input: String,
+    /// Position of cursor. u16 because Tui position is u16
+    pub cursor: u16,
     /// Current input mode
     pub input_mode: InputMode,
     /// Index of selected PathItem. In filtered list, not in the orignal full list
@@ -34,6 +36,7 @@ impl<'a> TuiState<'a> {
             items,
             edit_mode,
             input: String::new(),
+            cursor: 0,
             // Empty string in a filter just copies everything
             filtered: items.filter(""),
             input_mode: InputMode::Search,
