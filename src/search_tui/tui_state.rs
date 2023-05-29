@@ -53,6 +53,12 @@ impl<'a> TuiState<'a> {
 
     /// Set `highlighted` member to match `selected`
     pub fn set_highlighted(&mut self) {
+        if self.filtered.is_empty() {
+            self.selected = 0;
+        } else if self.selected >= self.filtered.len() {
+            self.selected = self.filtered.len() - 1;
+        }
+
         self.highlighted = if !self.filtered.is_empty() {
             // Copies reference (pointer) not the struct itself!
             self.filtered.get(self.selected).copied()
