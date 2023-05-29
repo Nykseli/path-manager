@@ -48,6 +48,18 @@ pub fn handle_event<'a>(app: &'a mut TuiState<'a>) -> io::Result<&'a mut TuiStat
                 _ => {}
             },
             InputMode::Search => match key.code {
+                KeyCode::Down => {
+                    if app.selected > 0 {
+                        app.selected -= 1;
+                        app.set_highlighted();
+                    }
+                }
+                KeyCode::Up => {
+                    if !app.filtered.is_empty() && app.selected < app.filtered.len() - 1 {
+                        app.selected += 1;
+                        app.set_highlighted();
+                    }
+                }
                 KeyCode::End => {
                     app.cursor = app.input.chars().count() as u16;
                 }
