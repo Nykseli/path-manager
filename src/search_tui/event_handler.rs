@@ -72,6 +72,11 @@ pub fn handle_event<'a>(app: &'a mut TuiState<'a>) -> io::Result<&'a mut TuiStat
                 KeyCode::Char('a') if key.modifiers.contains(KeyModifiers::CONTROL) => {
                     app.cursor = 0;
                 }
+                KeyCode::Char('d') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+                    app.input.clear();
+                    app.cursor = 0;
+                    input_changed = true;
+                }
                 KeyCode::Left => {
                     app.cursor = app.cursor.saturating_sub(1);
                 }
