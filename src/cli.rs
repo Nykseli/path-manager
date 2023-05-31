@@ -8,6 +8,7 @@ pub enum Mode {
     Tui {
         #[arg(short, long, help = "Launch TUI in edit mode")]
         edit: bool,
+        input: Vec<String>,
     },
 }
 

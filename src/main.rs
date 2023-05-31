@@ -69,14 +69,14 @@ fn main() {
     let args = Args::parse();
     match args.mode() {
         Mode::AddPath { path } => add_path(path),
-        Mode::Tui { edit } => {
+        Mode::Tui { edit, input } => {
             let mut items = load_saved_paths();
             items.sort();
             if *edit {
-                if let Ok(Some(items)) = run_edit_tui(&items) {
+                if let Ok(Some(items)) = run_edit_tui(&items, input) {
                     save_paths(items);
                 }
-            } else if let Ok(Some(path)) = run_select_tui(&items) {
+            } else if let Ok(Some(path)) = run_select_tui(&items, input) {
                 let tmux = Tmux::new();
                 let tmux = tmux.init();
                 tmux.cd_into(&path.full_path);

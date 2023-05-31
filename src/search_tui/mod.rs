@@ -44,10 +44,13 @@ fn restore_terminal(terminal: &mut CrossTerminal) -> Result<(), Box<dyn Error>> 
 }
 
 /// Return new PathItems if it has been edited
-pub fn run_edit_tui(items: &PathItems) -> Result<Option<PathItems>, Box<dyn Error>> {
+pub fn run_edit_tui(
+    items: &PathItems,
+    input: &[String],
+) -> Result<Option<PathItems>, Box<dyn Error>> {
     let mut terminal = setup_terminal()?;
 
-    let mut app = TuiState::new(items, true);
+    let mut app = TuiState::new(items, input, true);
     let res = run_app(&mut terminal, &mut app);
 
     restore_terminal(&mut terminal)?;
@@ -63,10 +66,13 @@ pub fn run_edit_tui(items: &PathItems) -> Result<Option<PathItems>, Box<dyn Erro
     }
 }
 
-pub fn run_select_tui(items: &PathItems) -> Result<Option<PathItem>, Box<dyn Error>> {
+pub fn run_select_tui(
+    items: &PathItems,
+    input: &[String],
+) -> Result<Option<PathItem>, Box<dyn Error>> {
     let mut terminal = setup_terminal()?;
 
-    let mut app = TuiState::new(items, false);
+    let mut app = TuiState::new(items, input, false);
     let res = run_app(&mut terminal, &mut app);
 
     restore_terminal(&mut terminal)?;

@@ -31,14 +31,16 @@ pub struct TuiState<'a> {
 }
 
 impl<'a> TuiState<'a> {
-    pub fn new(items: &'a PathItems, edit_mode: bool) -> Self {
+    pub fn new(items: &'a PathItems, input: &[String], edit_mode: bool) -> Self {
+        let input = input.join(" ");
+
         let mut state = Self {
             items,
             edit_mode,
-            input: String::new(),
-            cursor: 0,
             // Empty string in a filter just copies everything
-            filtered: items.filter(""),
+            filtered: items.filter(&input),
+            input,
+            cursor: 0,
             input_mode: InputMode::Search,
             quit: false,
             selected: 0,
