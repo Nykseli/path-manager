@@ -39,8 +39,8 @@ impl<'a> TuiState<'a> {
             edit_mode,
             // Empty string in a filter just copies everything
             filtered: items.filter(&input),
+            cursor: input.chars().count() as u16,
             input,
-            cursor: 0,
             input_mode: InputMode::Search,
             quit: false,
             selected: 0,
