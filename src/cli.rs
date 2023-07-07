@@ -5,6 +5,9 @@ pub enum Mode {
     AddPath {
         path: String,
     },
+    Pwd {
+        path: Option<String>,
+    },
     Tui {
         #[arg(short, long, help = "Launch TUI in edit mode")]
         edit: bool,

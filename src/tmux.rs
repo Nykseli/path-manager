@@ -67,4 +67,39 @@ impl Tmux<Initialized> {
             .spawn()
             .unwrap();
     }
+
+    pub fn cd_pwd(&self) {
+        let output = Command::new("tmux")
+            .arg("showenv")
+            .arg("-g")
+            .arg("PATH_MANAGER_PWD")
+            .output()
+            .unwrap();
+
+        let output = if output.stderr.is_empty() && !output.stdout.is_empty() {
+            String::from_utf8(output.stdout).unwrap()
+        } else {
+            eprintln!("Path manager pwd is not defined");
+            return;
+        };
+
+        let path = output.split('=').last().unwrap();
+        self.cd_into(path);
+    }
+
+    pub fn save_pwd(&self, path: &str) {
+        let path: String = std::fs::canonicalize(path)
+            .unwrap_or_else(|_| panic!("Path '{path}' was not found"))
+            .to_str()
+            .unwrap()
+            .into();
+
+        Command::new("tmux")
+            .arg("setenv")
+            .arg("-g")
+            .arg("PATH_MANAGER_PWD")
+            .arg(path)
+            .spawn()
+            .unwrap();
+    }
 }

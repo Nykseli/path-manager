@@ -68,6 +68,14 @@ fn add_path(path: &str) {
 fn main() {
     let args = Args::parse();
     match args.mode() {
+        Mode::Pwd { path } => {
+            let tmux = Tmux::new().init();
+            if let Some(path) = path {
+                tmux.save_pwd(path)
+            } else {
+                tmux.cd_pwd()
+            }
+        }
         Mode::AddPath { path } => add_path(path),
         Mode::Tui { edit, input } => {
             let mut items = load_saved_paths();
