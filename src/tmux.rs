@@ -83,7 +83,7 @@ impl Tmux<Initialized> {
             return;
         };
 
-        let path = output.split('=').last().unwrap();
+        let path = output.split('=').last().unwrap().trim();
         self.cd_into(path);
     }
 
