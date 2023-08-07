@@ -69,7 +69,7 @@ fn paths_view_widget<'a>(app: &'a TuiState<'a>) -> List<'a> {
         .iter()
         .enumerate()
         .map(|(i, m)| {
-            let content = vec![Spans::from(Span::raw(format!("{}: {}", i, m.full_path)))];
+            let content = vec![Spans::from(Span::raw(&m.full_path))];
             let style = paths_view_widget_style(app, m);
             if i == app.selected {
                 ListItem::new(content).style(style.add_modifier(Modifier::REVERSED))
